@@ -1,13 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import './App.css';
 
-function EventTimeline() {
+function EventTimeline({ searchTerm, setSearchTerm, sortOption, setSortOption }) {
   const [events, setEvents] = useState([]);
   const [filteredEvents, setFilteredEvents] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [sortOption, setSortOption] = useState('date');
   const [error, setError] = useState(null);
   const [editingEvent, setEditingEvent] = useState(null);
 
@@ -91,19 +89,19 @@ function EventTimeline() {
 
   return (
     <div className="App">
-      <h1>VibeX Events</h1> 
+      <img src="/top_banner.png" alt="VibeX Banner" className="event-banner" />
       <div className="search-sort-container">
         <input
           type="text"
           placeholder="Search events..."
           value={searchTerm}
           onChange={e => setSearchTerm(e.target.value)}
-          style={{ width: '200px', padding: '8px', marginRight: '10px' }}
+          className="search-bar"
         />
         <select
           value={sortOption}
           onChange={e => setSortOption(e.target.value)}
-          style={{ padding: '8px' }}
+          className="sort-select"
         >
           <option value="date">Sort by Date</option>
           <option value="name">Sort by Name</option>
