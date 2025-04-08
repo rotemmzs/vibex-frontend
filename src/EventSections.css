@@ -1,0 +1,15 @@
+/* Event Sections */
+.event-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  margin-left: 0; /* Align to the left of the viewport */
+  width: 730px; /* Updated to match total content width (350px + 30px + 350px) */
+  padding: 20px 0; /* Remove left/right padding */
+}
+
+.event-columns {
+  display: flex;
+  gap: 30px; /* Matches reference site */
+  justify-content: flex-start; /* Align columns to the left */
+}

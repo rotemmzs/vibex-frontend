@@ -4,16 +4,21 @@ import TopBar from './TopBar';
 import EventTimeline from './EventTimeline';
 import AdminPortal from './AdminPortal';
 import Login from './Login';
-import Footer from './Footer'; // Import the Footer component
+import Footer from './Footer';
 import './App.css';
 
 function App() {
   const [token, setToken] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortOption, setSortOption] = useState('date');
+  const [user, setUser] = useState(null); // Add user state
 
   const handleLogin = (newToken) => {
     setToken(newToken);
+  };
+
+  const handleUserUpdate = (userData) => {
+    setUser(userData); // Update user state
   };
 
   const ProtectedRoute = ({ children }) => {
@@ -23,12 +28,12 @@ function App() {
   return (
     <Router>
       <div className="app-container">
-        <TopBar onLogin={handleLogin} />
+        <TopBar onLogin={handleLogin} onUserUpdate={handleUserUpdate} />
         <div className="content">
           <Routes>
             <Route
               path="/"
-              element={<EventTimeline searchTerm={searchTerm} setSearchTerm={setSearchTerm} sortOption={sortOption} setSortOption={setSortOption} />}
+              element={<EventTimeline searchTerm={searchTerm} setSearchTerm={setSearchTerm} sortOption={sortOption} setSortOption={setSortOption} user={user} />}
             />
             <Route path="/login" element={<Login onLogin={handleLogin} />} />
             <Route
@@ -41,7 +46,7 @@ function App() {
             />
           </Routes>
         </div>
-        <Footer /> {/* Add the Footer component */}
+        <Footer />
       </div>
     </Router>
   );

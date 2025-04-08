@@ -1,0 +1,328 @@
+/* Event List and Tiles */
+.event-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /* Reduced gap to match reference site */
+}
+
+.event-tile {
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+  height: 200px; /* Matches reference site */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.event-tile:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.event-tile.tile-0 {
+  background: linear-gradient(145deg, #bb86fc, #8e24aa);
+}
+
+.event-tile.tile-1 {
+  background: linear-gradient(145deg, #1e2733, #1f2937);
+}
+
+.event-tile.tile-2 {
+  background: linear-gradient(145deg, #ffb300, #ff8f00);
+}
+
+.event-tile.tile-3 {
+  background: linear-gradient(145deg, #4caf50, #2e7d32);
+}
+
+.event-tile.tile-4 {
+  background: linear-gradient(145deg, #f06292, #c2185b);
+}
+
+.event-tile.large-tile {
+  width: 350px; /* Match the column width to prevent overflow */
+  padding: 20px; /* Matches reference site */
+}
+
+.event-tile.small-tile {
+  width: 350px; /* Same as large-tile */
+  padding: 10px; /* Reverted to match large-tile */
+}
+
+.event-tile-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px; /* Reverted to match large-tile */
+  flex-grow: 1;
+}
+
+.event-tile-header {
+  display: flex;
+  align-items: center;
+  gap: 15px; /* Reverted to match large-tile */
+  cursor: pointer;
+  position: relative;
+}
+
+.event-tile-date {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #fff;
+  gap: 2px;
+}
+
+.event-tile-day-of-week {
+  font-size: 0.8em; /* Matches reference site */
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.event-tile-day {
+  font-size: 1.6em; /* Matches reference site */
+  font-weight: 700;
+}
+
+.event-tile-month {
+  font-size: 0.8em; /* Matches reference site */
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.event-tile-main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  color: #fff;
+}
+
+.event-tile-main-content h2 {
+  margin: 0;
+  font-size: 1.3em; /* Matches reference site */
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.event-tile.small-tile .event-tile-main-content h2 {
+  font-size: 1.1em; /* Reverted to match large-tile */
+}
+
+.event-tile-date-text {
+  margin: 0;
+  font-size: 0.7em; /* Matches reference site */
+  font-weight: 400;
+}
+
+.event-tile.small-tile .event-tile-date-text {
+  font-size: 0.6em; /* Reverted to match large-tile */
+}
+
+.event-tile-time {
+  margin: 0;
+  font-size: 0.7em; /* Matches reference site */
+  font-weight: 400;
+}
+
+.event-tile.small-tile .event-tile-time {
+  font-size: 0.6em; /* Reverted to match large-tile */
+}
+
+.event-tile-venue {
+  margin: 0;
+  font-size: 0.7em; /* Matches reference site */
+  font-weight: 400;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.event-tile.small-tile .event-tile-venue {
+  font-size: 0.6em; /* Reverted to match large-tile */
+}
+
+.pin-icon {
+  font-size: 0.7em; /* Matches reference site */
+}
+
+.event-tile.small-tile .pin-icon {
+  font-size: 0.6em; /* Reverted to match large-tile */
+}
+
+.event-tile-footer {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.get-tickets-button {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px; /* Matches reference site */
+  background: #000;
+  color: #fff;
+  border: none;
+  border-radius: 15px;
+  font-size: 0.7em; /* Matches reference site */
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.event-tile.small-tile .get-tickets-button {
+  padding: 4px 8px; /* Reverted to match large-tile */
+  font-size: 0.6em; /* Reverted to match large-tile */
+}
+
+.get-tickets-button:hover {
+  background: #333;
+  transform: scale(1.05);
+}
+
+.ticket-icon {
+  font-size: 0.7em; /* Matches reference site */
+}
+
+.event-tile.small-tile .ticket-icon {
+  font-size: 0.6em; /* Reverted to match large-tile */
+}
+
+.event-tile-expanded {
+  position: absolute;
+  top: 0;
+  left: 100%;
+  width: 300px;
+  max-height: none;
+  margin: 0;
+  padding: 20px;
+  background: inherit;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  z-index: 10;
+}
+
+.event-tile-expanded.expanded {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.event-tile-expanded-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.event-tile-description,
+.event-tile-lineup,
+.event-tile-status {
+  margin-bottom: 10px;
+}
+
+.event-tile-description h3,
+.event-tile-lineup h3,
+.event-tile-status h3 {
+  font-size: 1em;
+  color: #fff;
+  font-family: 'Space Grotesk', sans-serif;
+  margin: 0 0 5px;
+  text-align: left;
+}
+
+.event-tile-description p,
+.event-tile-lineup p,
+.event-tile-status p {
+  margin: 0;
+  font-size: 0.8em;
+  text-align: left;
+  color: #fff;
+}
+
+.progress-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 5px 0;
+}
+
+.progress-bar {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.3);
+  height: 4px;
+  border-radius: 2px;
+  position: relative;
+  overflow: visible;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.3s ease;
+  position: relative;
+  background: #fff;
+}
+
+.progress-marker {
+  position: absolute;
+  right: -5px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 10px;
+  height: 10px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+}
+
+.event-tile.small-tile .progress-marker {
+  width: 10px; /* Reverted to match large-tile */
+  height: 10px; /* Reverted to match large-tile */
+}
+
+.progress-time-left {
+  font-size: 0.7em;
+  color: #fff;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+  justify-content: flex-end;
+}
+
+.action-buttons button {
+  padding: 6px 12px;
+  background: linear-gradient(145deg, #bb86fc, #03dac6);
+  color: #fff;
+  border: none;
+  border-radius: 15px;
+  font-weight: 600;
+  font-size: 0.8em;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.action-buttons button:hover {
+  background: linear-gradient(145deg, #03dac6, #bb86fc);
+  transform: scale(1.05);
+}
+
+.flash {
+  animation: flash 2s infinite;
+  color: #bb86fc;
+}
+
+@keyframes flash {
+  0% { opacity: 1; }
+  50% { opacity: 0.6; }
+  100% { opacity: 1; }
+}

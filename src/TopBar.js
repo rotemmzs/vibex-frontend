@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import logo from './logo.png'; // Adjust path if different
+import logo from './logo.png';
 import './TopBar.css';
 
-const TopBar = ({ onLogin }) => {
+const TopBar = ({ onLogin, onUserUpdate }) => {
   const [showSignIn, setShowSignIn] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -24,6 +24,7 @@ const TopBar = ({ onLogin }) => {
       const users = await response.json();
       const loggedInUser = users.find(u => u.username === username) || users[0];
       setUser(loggedInUser);
+      onUserUpdate(loggedInUser); // Pass user to parent
     } catch (err) {
       console.error('Fetch user info error:', err);
     }
@@ -59,6 +60,7 @@ const TopBar = ({ onLogin }) => {
 
   const handleSignOut = () => {
     setUser(null);
+    onUserUpdate(null); // Clear user in parent
     onLogin(null);
     navigate('/');
   };

@@ -1,0 +1,55 @@
+.edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.edit-form label {
+  font-weight: 500;
+  color: #e0e0e0;
+  text-align: left;
+}
+
+.edit-form input,
+.edit-form textarea {
+  width: 100%;
+  padding: 10px;
+  background: linear-gradient(145deg, #1e2733, #1f2937);
+  color: #e0e0e0;
+  border: 2px solid #bb86fc;
+  border-radius: 15px;
+  transition: border-color 0.3s ease;
+}
+
+.edit-form input:focus,
+.edit-form textarea:focus {
+  border-color: #03dac6;
+  outline: none;
+}
+
+.edit-form textarea {
+  height: 100px;
+  resize: none;
+}
+
+.edit-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.edit-buttons button {
+  padding: 8px 16px;
+  background: linear-gradient(145deg, #bb86fc, #03dac6);
+  color: #fff;
+  border: none;
+  border-radius: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.edit-buttons button:hover {
+  background: linear-gradient(145deg, #03dac6, #bb86fc);
+  transform: scale(1.05);
+}

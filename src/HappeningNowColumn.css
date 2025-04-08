@@ -1,0 +1,22 @@
+.happening-now-column {
+  width: 350px; /* Fixed width for Happening Now */
+  padding-left: 0; /* Ensure no extra padding on the left */
+}
+
+.happening-now-column .section-header {
+  justify-content: flex-start; /* Left-align the title and button */
+  flex-wrap: nowrap; /* Prevent wrapping */
+  margin-bottom: 20px; /* Matches reference site */
+}
+
+.happening-now-column .section-title {
+  font-size: 1.8em; /* Reduced font size to prevent wrapping */
+}
+
+.happening-now-column .jump-months-button {
+  font-size: 0.9em; /* Reduced font size to fit in one row */
+}
+
+.happening-now-column .event-list {
+  align-items: flex-start; /* Left-align tiles in Happening Now */
+}

@@ -1,17 +1,45 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-import './App.css';
+import HappeningNowColumn from './HappeningNowColumn';
+import TimelineColumn from './TimelineColumn';
+import './App.css'; // App-specific styles
+import './EventSections.css'; // Event sections styles
 
-function EventTimeline({ searchTerm, setSearchTerm, sortOption, setSortOption }) {
+function EventTimeline({ searchTerm, setSearchTerm, sortOption, setSortOption, user }) {
   const [events, setEvents] = useState([]);
   const [filteredEvents, setFilteredEvents] = useState([]);
   const [error, setError] = useState(null);
   const [editingEvent, setEditingEvent] = useState(null);
+  const [expandedEvent, setExpandedEvent] = useState(null);
+  const [timeLeft, setTimeLeft] = useState({});
+  const [currentMonth, setCurrentMonth] = useState(new Date());
 
   useEffect(() => {
     fetchEvents();
   }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const newTimeLeft = {};
+      events.forEach(event => {
+        const startTime = new Date(event.start_time);
+        const now = new Date();
+        const diff = startTime - now;
+        if (diff > 0) {
+          const hours = Math.floor(diff / (1000 * 60 * 60));
+          const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+          const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+          newTimeLeft[event.id] = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        } else {
+          newTimeLeft[event.id] = '00:00:00';
+        }
+      });
+      setTimeLeft(newTimeLeft);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [events]);
 
   const fetchEvents = () => {
     axios.get('http://192.168.64.3:3000/api/events')
@@ -48,24 +76,45 @@ function EventTimeline({ searchTerm, setSearchTerm, sortOption, setSortOption })
 
     if (now < startTime) {
       const timeToStart = startTime - now;
-      if (timeToStart <= 15 * 60 * 1000) return { progress: 0, color: 'yellow', status: 'soon' };
-      if (timeToStart <= 60 * 60 * 1000) return { progress: 0, color: 'blue', status: 'upcoming' };
-      return { progress: 0, color: 'gray', status: 'future' };
+      if (timeToStart <= 15 * 60 * 1000) return { progress: 0, color: '#bb86fc', status: 'soon' };
+      if (timeToStart <= 60 * 60 * 1000) return { progress: 0, color: '#03dac6', status: 'upcoming' };
+      return { progress: 0, color: '#4b5e7a', status: 'future' };
     }
-    if (now > endTime) return { progress: 100, color: 'red', status: 'ended' };
+    if (now > endTime) return { progress: 100, color: '#ef5350', status: 'ended' };
 
     const progress = (elapsed / total) * 100;
-    if (progress >= 70) return { progress, color: 'orange', status: 'ending', flash: true };
-    if (progress >= 30) return { progress, color: 'lightgreen', status: 'ongoing' };
-    return { progress, color: 'green', status: 'started' };
+    if (progress >= 70) return { progress, color: '#ff8a65', status: 'ending', flash: true };
+    if (progress >= 30) return { progress, color: '#81c784', status: 'ongoing' };
+    return { progress, color: '#66bb6a', status: 'started' };
+  };
+
+  const formatDateForInput = (dateString) => {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
   };
 
   const handleEdit = (event) => {
-    setEditingEvent({ ...event });
+    setEditingEvent({ 
+      ...event,
+      start_time: formatDateForInput(event.start_time),
+      end_time: formatDateForInput(event.end_time)
+    });
   };
 
   const handleUpdate = (id) => {
-    axios.put(`http://192.168.64.3:3000/api/events/${id}`, editingEvent)
+    const payload = {
+      ...editingEvent,
+      start_time: new Date(editingEvent.start_time).toISOString(),
+      end_time: new Date(editingEvent.end_time).toISOString()
+    };
+    
+    axios.put(`http://192.168.64.3:3000/api/events/${id}`, payload)
       .then(response => {
         setEvents(events.map(e => e.id === id ? response.data : e));
         setEditingEvent(null);
@@ -87,103 +136,110 @@ function EventTimeline({ searchTerm, setSearchTerm, sortOption, setSortOption })
       });
   };
 
+  const toggleExpand = (id) => {
+    setExpandedEvent(expandedEvent === id ? null : id);
+  };
+
+  const getDayOfWeek = (date) => {
+    return new Date(date).toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase();
+  };
+
+  const getDay = (date) => {
+    return new Date(date).toLocaleDateString('en-US', { day: '2-digit' });
+  };
+
+  const getMonth = (date) => {
+    return new Date(date).toLocaleDateString('en-US', { month: 'short' }).toUpperCase();
+  };
+
+  const getFormattedDate = (date) => {
+    return new Date(date).toLocaleDateString('en-US', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  };
+
+  const getTimeRange = (start, end) => {
+    const startTime = new Date(start).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+    const endTime = new Date(end).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+    return `${startTime} - ${endTime}`;
+  };
+
+  const getNextEventTime = () => {
+    const now = new Date();
+    const upcomingEvents = events.filter(event => new Date(event.start_time) > now);
+    if (upcomingEvents.length === 0) return '00:00:00';
+    const nextEvent = upcomingEvents.sort((a, b) => new Date(a.start_time) - new Date(b.start_time))[0];
+    const diff = new Date(nextEvent.start_time) - now;
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  };
+
+  const handlePrevMonth = () => {
+    setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1));
+  };
+
+  const handleNextMonth = () => {
+    setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1));
+  };
+
+  const now = new Date();
+  const happeningNow = filteredEvents.filter(event => {
+    const startTime = new Date(event.start_time);
+    const endTime = new Date(event.end_time);
+    return startTime <= now && now <= endTime;
+  });
+
+  const comingUp = filteredEvents.filter(event => {
+    const startTime = new Date(event.start_time);
+    return startTime > now;
+  }).sort((a, b) => new Date(a.start_time) - new Date(b.start_time));
+
   return (
     <div className="App">
       <img src="/top_banner.png" alt="VibeX Banner" className="event-banner" />
-      <div className="search-sort-container">
-        <input
-          type="text"
-          placeholder="Search events..."
-          value={searchTerm}
-          onChange={e => setSearchTerm(e.target.value)}
-          className="search-bar"
-        />
-        <select
-          value={sortOption}
-          onChange={e => setSortOption(e.target.value)}
-          className="sort-select"
-        >
-          <option value="date">Sort by Date</option>
-          <option value="name">Sort by Name</option>
-        </select>
-      </div>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      <div className="event-list">
-        {filteredEvents.map(event => {
-          const { progress, color, status, flash } = getProgress(event.start_time, event.end_time);
-          return (
-            <div key={event.id} className={`event-tile ${flash ? 'flash' : ''}`}>
-              {editingEvent && editingEvent.id === event.id ? (
-                <div className="edit-form">
-                  <h2>Edit Event</h2>
-                  <label>Title:</label>
-                  <input
-                    type="text"
-                    value={editingEvent.title}
-                    onChange={e => setEditingEvent({ ...editingEvent, title: e.target.value })}
-                  />
-                  <label>Venue:</label>
-                  <input
-                    type="text"
-                    value={editingEvent.venue_name}
-                    onChange={e => setEditingEvent({ ...editingEvent, venue_name: e.target.value })}
-                  />
-                  <label>Location:</label>
-                  <input
-                    type="text"
-                    value={editingEvent.location}
-                    onChange={e => setEditingEvent({ ...editingEvent, location: e.target.value })}
-                  />
-                  <label>Start Time:</label>
-                  <input
-                    type="datetime-local"
-                    value={editingEvent.start_time.slice(0, 16)}
-                    onChange={e => setEditingEvent({ ...editingEvent, start_time: e.target.value + 'Z' })}
-                  />
-                  <label>End Time:</label>
-                  <input
-                    type="datetime-local"
-                    value={editingEvent.end_time.slice(0, 16)}
-                    onChange={e => setEditingEvent({ ...editingEvent, end_time: e.target.value + 'Z' })}
-                  />
-                  <label>Timezone:</label>
-                  <input
-                    type="text"
-                    value={editingEvent.timezone}
-                    onChange={e => setEditingEvent({ ...editingEvent, timezone: e.target.value })}
-                  />
-                  <label>Description:</label>
-                  <textarea
-                    value={editingEvent.description}
-                    onChange={e => setEditingEvent({ ...editingEvent, description: e.target.value })}
-                  />
-                  <div className="edit-buttons">
-                    <button onClick={() => handleUpdate(event.id)}>Save</button>
-                    <button onClick={() => setEditingEvent(null)}>Cancel</button>
-                  </div>
-                </div>
-              ) : (
-                <>
-                  <h2>{event.title}</h2>
-                  <p><strong>Venue:</strong> {event.venue_name}</p>
-                  <p><strong>Location:</strong> {event.location}</p>
-                  <p><strong>Starts:</strong> {new Date(event.start_time).toLocaleString()}</p>
-                  <p><strong>Ends:</strong> {new Date(event.end_time).toLocaleString()}</p>
-                  <p><strong>Timezone:</strong> {event.timezone}</p>
-                  <p><strong>Description:</strong> {event.description}</p>
-                  <div className="progress-bar" style={{ background: '#e0e0e0', height: '10px', width: '100%', borderRadius: '5px' }}>
-                    <div style={{ width: `${progress}%`, height: '100%', backgroundColor: color, borderRadius: '5px' }}></div>
-                  </div>
-                  <p><strong>Status:</strong> {status}</p>
-                  <div className="action-buttons">
-                    <button onClick={() => handleEdit(event)}>Edit</button>
-                    <button onClick={() => handleDelete(event.id)}>Delete</button>
-                  </div>
-                </>
-              )}
-            </div>
-          );
-        })}
+      <div className="event-sections">
+        <div className="event-columns">
+          <HappeningNowColumn
+            events={happeningNow}
+            editingEvent={editingEvent}
+            setEditingEvent={setEditingEvent}
+            expandedEvent={expandedEvent}
+            toggleExpand={toggleExpand}
+            handleEdit={handleEdit}
+            handleUpdate={handleUpdate}
+            handleDelete={handleDelete}
+            getProgress={getProgress}
+            timeLeft={timeLeft}
+            getDayOfWeek={getDayOfWeek}
+            getDay={getDay}
+            getMonth={getMonth}
+            getFormattedDate={getFormattedDate}
+            getTimeRange={getTimeRange}
+            user={user}
+          />
+          <TimelineColumn
+            events={comingUp}
+            editingEvent={editingEvent}
+            setEditingEvent={setEditingEvent}
+            expandedEvent={expandedEvent}
+            toggleExpand={toggleExpand}
+            handleEdit={handleEdit}
+            handleUpdate={handleUpdate}
+            handleDelete={handleDelete}
+            getProgress={getProgress}
+            timeLeft={timeLeft}
+            getDayOfWeek={getDayOfWeek}
+            getDay={getDay}
+            getMonth={getMonth}
+            getFormattedDate={getFormattedDate}
+            getTimeRange={getTimeRange}
+            getNextEventTime={getNextEventTime}
+            currentMonth={currentMonth}
+            handlePrevMonth={handlePrevMonth}
+            handleNextMonth={handleNextMonth}
+            user={user}
+          />
+        </div>
       </div>
     </div>
   );

@@ -1,0 +1,36 @@
+.timeline-column {
+  width: 350px; /* Same as Happening Now column */
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center the timeline tiles */
+}
+
+.timeline-column .section-header {
+  margin-bottom: 20px; /* Matches HappeningNowColumn to align tiles vertically */
+}
+
+.timeline-column .event-list {
+  align-items: center; /* Center tiles in Coming Up Next */
+}
+
+.date-navigation {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.nav-arrow {
+  background: none;
+  border: none;
+  font-size: 1.5em;
+  cursor: pointer;
+  color: #000;
+}
+
+.current-month {
+  font-size: 1.5em;
+  font-weight: 700;
+  color: #000;
+}
